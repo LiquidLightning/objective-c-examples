@@ -1,0 +1,66 @@
+AppDelegate.h
+#import <Cocoa/Cocoa.h>
+@interface AppDelegate : NSObject <NSApplicationDelegate>
+-(IBAction)inc:(id)sender;
+@end
+
+AppDelegate.m
+#import "AppDelegate.h"
+#import "AppController.h"
+@interface AppDelegate ()
+@property (weak) IBOutlet NSWindow *window;
+@property (weak) IBOutlet NSTextField *tf;
+@property (weak) IBOutlet NSSlider *slider;
+@property NSObjectController *oc;
+@property AppController *ac;
+@end
+@implementation AppDelegate
+@synthesize ac, oc;
+- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
+{
+	ac = [AppController new];
+	oc = [[NSObjectController alloc] initWithContent:ac];
+	oc.editable = NO;
+	[self.tf bind:@"value" toObject:oc withKeyPath:@"selection.fido" options:nil];
+	[self.slider bind:@"value" toObject:oc withKeyPath:@"selection.fido" options:nil];
+}
+- (void)applicationWillTerminate:(NSNotification *)aNotification
+{
+	[self.tf unbind:@"value"];
+	[self.slider unbind:@"value"];
+}
+-(IBAction)inc:(id)sender
+{
+	// not
+	//ac.fido += 1;
+	// but
+	//[ac setValue:[NSNumber numberWithInt:[ac.fido intValue] +1] forKey:@"fido"];
+	// or
+	//[ac willChangeValueForKey:@"fido"];
+	//ac.fido += 1;
+	//[ac didChangeValueForKey:@"fido"];
+	// or
+	[ac setFido:[ac fido] + 1];
+}
+@end
+
+AppController.h
+#import <Foundation/Foundation.h>
+@interface AppController : NSObject
+@property int fido;
+@end
+
+AppController.m
+#import "AppController.h"
+@implementation AppController
+@synthesize fido;
+-(instancetype)init
+{
+	self = [super init];
+	if (self)
+	{
+		fido = 50;
+	}
+	return self;
+}
+@end
